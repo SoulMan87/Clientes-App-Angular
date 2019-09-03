@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CLIENTES } from './clientes.jason';
+import { CLIENTES } from './clientes.json';
 import { Cliente } from './cliente';
 import { Observable, throwError } from 'rxjs';
 import { of } from 'rxjs';
@@ -25,9 +25,16 @@ export class ClienteService {
       map(response => response as Cliente[])
     );
   }
-  create(cliente: Cliente): Observable<Cliente> {
+  create(cliente: Cliente): Observable<any> {
     // tslint:disable-next-line:semicolon
-    return this.http.post<Cliente>(this.urlEndPoint, cliente, { headers: this.httpHeaders })
+    return this.http.post(this.urlEndPoint, cliente, { headers: this.httpHeaders }).pipe(
+      map((response: any) => response.cliente as Cliente),
+      catchError(e => {
+        console.error(e.error.mensaje);
+        Swal.fire(e.error.mensaje, e.error.error, 'error');
+        return throwError(e);
+      })
+    );
   }
   getCliente(id): Observable<Cliente> {
     // tslint:disable-next-line:semicolon
@@ -40,12 +47,24 @@ export class ClienteService {
       })
     );
   }
-  update(cliente: Cliente): Observable<Cliente> {
+  update(cliente: Cliente): Observable<any> {
     // tslint:disable-next-line:semicolon
-    return this.http.put<Cliente>(`${this.urlEndPoint}/${cliente.id}`, cliente, { headers: this.httpHeaders })
+    return this.http.put<Cliente>(`${this.urlEndPoint}/${cliente.id}`, cliente, { headers: this.httpHeaders }).pipe(
+      catchError(e => {
+        console.error(e.error.mensaje);
+        Swal.fire(e.error.mensaje, e.error.error, 'error');
+        return throwError(e);
+      })
+    );
   }
   delete(id: number): Observable<Cliente> {
     // tslint:disable-next-line:semicolon
-    return this.http.delete<Cliente>(`${this.urlEndPoint}/${id}`, { headers: this.httpHeaders })
+    return this.http.delete<Cliente>(`${this.urlEndPoint}/${id}`, { headers: this.httpHeaders }).pipe(
+      catchError(e => {
+        console.error(e.error.mensaje);
+        Swal.fire(e.error.mensaje, e.error.error, 'error');
+        return throwError(e);
+      })
+    );
   }
 }

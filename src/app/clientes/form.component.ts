@@ -40,22 +40,22 @@ export class FormComponent implements OnInit {
 
   }
 
-  public create(): void {
+  create(): void {
     this.clienteService.create(this.cliente)
       .subscribe(cliente => {
         // tslint:disable-next-line:semicolon
         this.router.navigate(['/clientes'])
-        swal.fire('Nuevo Cliente', `Cliente ${cliente.nombre} creado exitosamente`, 'success');
+        swal.fire('Nuevo Cliente', `El cliente ${cliente.nombre} ha sido creado con éxito! `, 'success');
       }
       );
   }
   update(): void {
     this.clienteService.update(this.cliente)
-      .subscribe(cliente => {
+      .subscribe(json => {
         // tslint:disable-next-line:semicolon
         this.router.navigate(['/clientes'])
         // tslint:disable-next-line:semicolon
-        swal.fire('Cliente Actualizado', `Cliente ${cliente.nombre} actualizado con éxito`, 'success')
+        swal.fire('Cliente Actualizado', `${json.mensaje}: ${json.cliente.nombre} `, 'success')
       });
 
   }
