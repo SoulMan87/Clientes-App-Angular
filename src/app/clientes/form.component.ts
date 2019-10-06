@@ -17,6 +17,8 @@ export class FormComponent implements OnInit {
   // tslint:disable-next-line:no-inferrable-types
   private titulo: string = 'Crear Cliente';
 
+  private errores: string[];
+
   constructor(private clienteService: ClienteService,
     // tslint:disable-next-line:align
     private router: Router,
@@ -46,7 +48,12 @@ export class FormComponent implements OnInit {
         // tslint:disable-next-line:semicolon
         this.router.navigate(['/clientes'])
         swal.fire('Nuevo Cliente', `El cliente ${cliente.nombre} ha sido creado con éxito! `, 'success');
-      }
+      },
+        err => {
+          this.errores = err.error.errors as string[];
+          console.log('Código del error desde el backend: ' + err.status);
+          console.error(err.error.errors);
+        }
       );
   }
   update(): void {
@@ -56,7 +63,12 @@ export class FormComponent implements OnInit {
         this.router.navigate(['/clientes'])
         // tslint:disable-next-line:semicolon
         swal.fire('Cliente Actualizado', `${json.mensaje}: ${json.cliente.nombre} `, 'success')
-      });
+      },
+        err => {
+          this.errores = err.error.errors as string[];
+          console.log('Código del error desde el backend: ' + err.status);
+          console.error(err.error.errors);
+        });
 
   }
 
