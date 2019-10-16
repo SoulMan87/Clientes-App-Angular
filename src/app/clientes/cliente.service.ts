@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { CLIENTES } from './clientes.json';
 import { Cliente } from './cliente';
 import { Observable, throwError } from 'rxjs';
 import { of } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map, catchError } from 'rxjs/operators';
+import { formatDate, DatePipe } from '@angular/common';
+import { map, catchError, tap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 
@@ -22,7 +22,30 @@ export class ClienteService {
   getClientes(): Observable<Cliente[]> {
     // tslint:disable-next-line:whitespace
     return this.http.get(this.urlEndPoint).pipe(
-      map(response => response as Cliente[])
+      tap(response => {
+        const clientes = response as Cliente[];
+        console.log('ClienteService: tap 1');
+        clientes.forEach(cliente => {
+          console.log(cliente.nombre);
+        });
+      }),
+      map(response => {
+        const clientes = response as Cliente[];
+        return clientes.map(cliente => {
+          cliente.nombre = cliente.nombre.toUpperCase();
+
+          const datePipe = new DatePipe('es');
+          // tslint:disable-next-line:max-line-length
+          // cliente.createAt = datePipe.transform(cliente.createAt, 'EEEE dd,MMMM yyyy'); // formatDate(cliente.createAt, 'dd-MM-yyyy', 'en-US');
+          return cliente;
+        });
+      }),
+      tap(response => {
+        console.log('ClienteService: tap 2');
+        response.forEach(cliente => {
+          console.log(cliente.nombre);
+        });
+      })
     );
   }
   create(cliente: Cliente): Observable<any> {
