@@ -3,6 +3,7 @@ import { Cliente } from './cliente';
 import { ClienteService } from './cliente.service';
 import swal from 'sweetalert2';
 import { tap } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -13,13 +14,28 @@ import { tap } from 'rxjs/operators';
 export class ClientesComponent implements OnInit {
 
   clientes: Cliente[];
-  constructor(private clienteService: ClienteService) { }
+  paginador: any;
+  // tslint:disable-next-line:one-line
+  constructor(private clienteService: ClienteService, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
-    this.clienteService.getClientes().pipe(
-      tap(clientes => this.clientes = clientes)
-    ).subscribe();
-    // importante para el observable
+    this.activatedRoute.paramMap.subscribe(params => {
+      let page: number = +params.get('page');
+      if (!page) {
+        page = 0;
+      }
+      this.clienteService.getClientes(page).pipe(
+        tap(response => {
+          console.log('ClientesComponet: tap 3');
+          (response.content as Cliente[]).forEach(clientes => console.log(clientes.nombre));
+        })
+      ).subscribe(response => {
+        this.clientes = response.content as Cliente[];
+        this.paginador = response;
+      });
+    }
+      // importante para el observable
+    );
   }
   // tslint:disable-next-line:one-line
   delete(cliente: Cliente): void {

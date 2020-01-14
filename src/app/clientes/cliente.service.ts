@@ -19,30 +19,29 @@ export class ClienteService {
   constructor(private http: HttpClient, private router: Router) { }
 
   // tslint:disable-next-line:whitespace
-  getClientes(): Observable<Cliente[]> {
+  getClientes(page: number): Observable<any> {
     // tslint:disable-next-line:whitespace
-    return this.http.get(this.urlEndPoint).pipe(
-      tap(response => {
-        const clientes = response as Cliente[];
+    return this.http.get(this.urlEndPoint + '/page/' + page).pipe(
+      tap((response: any) => {
         console.log('ClienteService: tap 1');
-        clientes.forEach(cliente => {
+        (response.content as Cliente[]).forEach(cliente => {
           console.log(cliente.nombre);
         });
       }),
-      map(response => {
-        const clientes = response as Cliente[];
-        return clientes.map(cliente => {
+      map((response: any) => {
+        (response.content as Cliente[]).map(cliente => {
           cliente.nombre = cliente.nombre.toUpperCase();
 
-          const datePipe = new DatePipe('es');
+          // const datePipe = new DatePipe('es');
           // tslint:disable-next-line:max-line-length
           // cliente.createAt = datePipe.transform(cliente.createAt, 'EEEE dd,MMMM yyyy'); // formatDate(cliente.createAt, 'dd-MM-yyyy', 'en-US');
           return cliente;
         });
+        return response;
       }),
       tap(response => {
         console.log('ClienteService: tap 2');
-        response.forEach(cliente => {
+        (response.content as Cliente[]).forEach(cliente => {
           console.log(cliente.nombre);
         });
       })
